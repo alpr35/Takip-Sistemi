@@ -1,0 +1,822 @@
+#include <stdio.h>
+#include <conio.h> //Alper İLÇİKTAY 13253030
+#include <string.h> //Sığınmaci Takip Sistemi
+#include <stdlib.h> //Başlangıç Admin k.adı:alper şifresi:q1w2e3r4
+#include <ctype.h>
+char s_dizi[][20];
+void admin();
+char menu();
+char siginmacimenu();
+void siginmaci_memuru();
+void kullanici();
+void kullaniciekle(); //Tamamlandı
+void siginmaciekle(); //Tamamlandı
+void kullaniciara();  //Tamamlandı
+void siginmaciara();  //Tamamlandı
+void kullaniciguncelle(); //Tamamlandı
+void siginmaciguncelle(); //Tamamlandı
+void kullanicisil(); //Tamamlandı
+void siginmacisil(); //Tamamlandı
+void sifre_degistirme(); //Tamamlandı
+void siginmacilistele(); //???
+void bubble_sort();
+char kulgoruntule[20];
+void kullanici_goruntuleme(); //Tamamlandı
+
+
+struct kisiler
+{	
+	char siginmaci_no[20];
+	char ad[20];
+	char soyad[20];
+	char dogum_tarihi[20];
+	char dogum_yeri[20];
+	char cinsiyet[20];
+	char uyruk[20];
+	char meslek[20];
+	char egitim_durumu[20];
+	char telefon[20];
+	char yerlestirildigi_adres[20];
+	char geldigi_sehir[20];
+	char gelis_tarihi[20];
+	char e_posta[20];
+}kayit,listeleme[30],yedek2[BUFSIZ],silinecek2[BUFSIZ];
+struct kullanici
+{
+	char TC_kimlik_no[20];
+	char ad[20];
+	char soyad[20];
+	char adres[20];
+	char telefon[20];
+	char e_posta[20];
+	char kullanici_adi[20];
+	char sifre[20];
+	int yetki_turu;
+}kayit2,yedek[BUFSIZ],silinecek[BUFSIZ];
+
+void main()
+{
+	FILE *dd;
+	dd=fopen("d:\\Kullanicilar.txt","r");
+	if(dd==NULL)
+		printf("Surucu Bulunamadi.");
+	else
+	{
+
+		char kullanici_adi[20];
+		char sifre[20];
+		char secim;
+		printf("Merhaba siginmaci takip sistemine hoşgeldiniz.\n");
+		printf("------------------------------------------------");
+		do
+		{
+		printf("\nKullanici Adi:\n");
+		gets(kullanici_adi);
+		printf("Sifre:\n");
+		gets(sifre);
+		
+		do
+		{
+			fscanf(dd,"%20s%20s%20s%20s%20s%20s%20s%20d",kayit2.TC_kimlik_no,kayit2.ad,kayit2.soyad,kayit2.adres,kayit2.telefon,kayit2.kullanici_adi,kayit2.sifre,&kayit2.yetki_turu);
+			if (!strcmp(kullanici_adi,kayit2.kullanici_adi) && !strcmp(sifre,kayit2.sifre) && kayit2.yetki_turu==1 || !strcmp(kullanici_adi,"alper") && !strcmp(sifre,"q1w2e3r4"))
+			{
+				admin();
+			}
+			if (!strcmp(kullanici_adi,kayit2.kullanici_adi) && !strcmp(sifre,kayit2.sifre) && kayit2.yetki_turu==2)
+			{
+				siginmaci_memuru();    
+			}
+			if (!strcmp(kullanici_adi,kayit2.kullanici_adi) && !strcmp(sifre,kayit2.sifre) && kayit2.yetki_turu==3)
+			{
+				strcpy(kulgoruntule,kullanici_adi);
+				kullanici();
+			}
+		}
+		while(!feof(dd));
+		rewind(dd);
+		system("CLS");
+		printf("Hatali giris yaptiniz lutfen tekrar giris yapiniz.\n");
+		printf("Tekrar giris yapmak icin herhangi bir tusa basin (C)ikis :");	
+		secim = tolower(getche());
+		}
+		while(secim != 'c');
+	
+}
+	fclose(dd);
+}
+
+void admin()
+{
+	char secenek,secenek2;
+	printf("Kullanici islemleri icin (1) Siginmaci islemleri icin(2) : " );
+	secenek2 = tolower(getche());
+	printf("\n");
+	switch(secenek2)
+	{
+	case '1' :
+		{
+			do
+			{
+				secenek=menu();
+				switch(secenek)
+				{
+				case'e':
+					kullaniciekle(); break;
+				case 'a':
+					kullaniciara(); break;
+				case 'g':
+					kullaniciguncelle(); break;
+				case 's':
+					kullanicisil(); break;
+				}
+			}
+			while (secenek != 'c');
+		}
+	case '2' :
+		{
+			do
+			{
+				secenek=menu();
+				switch(secenek)
+				{
+				case'e':
+					siginmaciekle(); break;
+				case 'a':
+					siginmaciara(); break;
+				case 'g':
+					siginmaciguncelle(); 	break;
+				case 'l':
+					siginmacilistele(); break;
+				case 's':
+					siginmacisil(); break;
+				}
+			}
+			while (secenek != 'c');
+		}
+	}
+}
+
+void siginmaci_memuru()
+{
+
+	char	secenek3;
+	do
+	{
+          secenek3=siginmacimenu();
+				
+               switch(secenek3)
+				{
+				case'e':
+					siginmaciekle(); break;
+				case 'a':
+					siginmaciara(); break;
+				case 'g':
+					siginmaciguncelle(); 	break;
+				case 'l':
+					siginmacilistele(); break;
+				case 's':
+					siginmacisil(); break;
+				}
+}
+	while(secenek3!='c');
+}
+
+void kullanici()
+{
+	char tercih;
+	printf("Kullanici bilgilerinizi goruntulemek icin 1'i\n");
+	printf("Kullanici sifrenizi degistirmek icin 2'yi tuslayiniz\n");
+	printf("Tercihiniz :");
+    tercih = tolower(getche());
+	printf("\n");
+	switch(tercih)
+	{
+	case '1' :
+		{
+		kullanici_goruntuleme();
+		}
+	case '2' :
+		sifre_degistirme();
+	}
+}
+
+void kullaniciekle()
+{
+	FILE *dd;
+	dd=fopen("d:\\Kullanicilar.txt","a");
+	if(dd==NULL)
+		printf("Surucu Bulunamadi.");
+	else
+	{
+		do
+	{
+		printf("Kullanicinin TC Kimlik NO'sunu Giriniz :");
+		gets(kayit2.TC_kimlik_no); 
+		if(strlen(kayit2.TC_kimlik_no) != 11)
+		{
+			printf("Yanlis bir TC girdiniz.Lutfen tekrar giriniz\n");
+		}
+		else if(strlen(kayit2.TC_kimlik_no) == 11)
+	break;
+	}
+		while(1);
+		printf("Kullanicinin Adini Giriniz :");
+		gets(kayit2.ad);
+		printf("Kullanicinin Soyadini Giriniz :");
+		gets(kayit2.soyad);
+		printf("Kullanicinin adresini Giriniz :");
+		gets(kayit2.adres);
+		do
+	{
+		printf("Kullanicinin Telefonunu Giriniz : ");
+		printf("+90");
+		gets(kayit2.telefon);
+		if(strlen(kayit2.telefon) != 10)
+		{
+			printf("Yanlis bir telefon girdiniz.Lutfen tekrar giriniz\n");
+		}
+		else if(strlen(kayit2.telefon) == 10)
+	break;
+	}
+		while(1);
+		printf("Kullanicinin E-Posta Adresini Giriniz :");
+		gets(kayit2.e_posta);
+		printf("Kullanici Adini Giriniz :");
+		gets(kayit2.kullanici_adi);
+		printf("Kullanici Sifresini Giriniz :");
+		gets(kayit2.sifre);
+		do
+		{
+			printf("Kullanicinin Yetki Türünü Giriniz (Admin icin 1 , Siginmaci Memuru icin 2 , Kullanici icin 3) :");
+			scanf("%d",&kayit2.yetki_turu);
+		}
+		while(kayit2.yetki_turu!=  1 && kayit2.yetki_turu!= 2 && kayit2.yetki_turu!=3);
+		fprintf(dd,"%20s%20s%20s%20s%20s%20s%20s%20d\n",kayit2.TC_kimlik_no,kayit2.ad,kayit2.soyad,kayit2.adres,kayit2.telefon,kayit2.kullanici_adi,kayit2.sifre,kayit2.yetki_turu);
+		fclose(dd);
+	}
+}
+
+void siginmaciekle()
+{
+	FILE *ff;
+	ff=fopen("d:\\Kisiler.txt","a");
+	if(ff==NULL)
+		printf("Dosya Bulunamadi.");
+	else
+	{
+		hata:
+		printf("Siginmacinin Adini Giriniz :");
+		gets(kayit.ad);
+		if((strstr(kayit.ad,"1"))||(strstr(kayit.ad,"2"))||(strstr(kayit.ad,"3"))||(strstr(kayit.ad,"4"))||(strstr(kayit.ad,"5"))||(strstr(kayit.ad,"6"))||(strstr(kayit.ad,"7"))||(strstr(kayit.ad,"8"))||(strstr(kayit.ad,"9"))||(strstr(kayit.ad,"0")))
+		{
+		printf("Lutfen ad giriniz.\n");
+		goto hata;
+		}
+		hata2:
+		printf("Siginmacinin Soyadini Giriniz :");
+		gets(kayit.soyad);
+		if((strstr(kayit.soyad,"1"))||(strstr(kayit.soyad,"2"))||(strstr(kayit.soyad,"3"))||(strstr(kayit.soyad,"4"))||(strstr(kayit.soyad,"5"))||(strstr(kayit.soyad,"6"))||(strstr(kayit.soyad,"7"))||(strstr(kayit.soyad,"8"))||(strstr(kayit.soyad,"9"))||(strstr(kayit.soyad,"0")))
+		{printf("Lutfen soyad giriniz.\n");
+		goto hata2;}
+		printf("Siginmacinin Dogum Tarihini Giriniz :");
+		gets(kayit.dogum_tarihi);
+		printf("Siginmacinin Dogum Yerini Giriniz :");
+		gets(kayit.dogum_yeri);
+		printf("Siginmacinin Cinsiyetini Giriniz (E/K) :");
+		gets(kayit.cinsiyet);
+		printf("Siginmacinin Uyrugunu Giriniz :");
+		gets(kayit.uyruk);
+		printf("Siginmacinin Meslegini Giriniz :");
+		gets(kayit.meslek);
+		printf("Siginmacinin Egitim Durumunu Giriniz :");
+		gets(kayit.egitim_durumu);
+		do
+	{
+		printf("Kullanicinin Telefonunu Giriniz : ");
+		printf("+90");
+		gets(kayit.telefon);
+		if(strlen(kayit.telefon) != 10)
+		{
+			printf("Yanlis bir telefon girdiniz.Lutfen tekrar giriniz\n");
+		}
+		else if(strlen(kayit.telefon) == 10)
+	break;
+	}
+	while(1);
+		printf("Siginmacinin Yerlestirildigi Adresi Giriniz :");
+		gets(kayit.yerlestirildigi_adres);
+		printf("Siginmacinin Geldigi Sehir Giriniz :");
+		gets(kayit.geldigi_sehir);
+		printf("Siginmacinin Gelis Tar	ihini Giriniz :");
+		gets(kayit.gelis_tarihi);
+		printf("Siginmacinin Eposta'sini (Varsa) Giriniz (Yoksa Bos birakiniz.) :");
+		gets(kayit.e_posta);
+		fprintf(ff,"%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s\n",kayit.ad,kayit.soyad,kayit.dogum_tarihi,kayit.dogum_yeri,kayit.cinsiyet,kayit.uyruk,kayit.meslek,kayit.egitim_durumu,kayit.telefon,kayit.yerlestirildigi_adres,kayit.geldigi_sehir,kayit.gelis_tarihi,kayit.e_posta);
+		fclose (ff);
+	}
+}
+
+char menu()
+{
+	char ch;
+	do
+	{
+		printf("(E)kle , (A)ra , (G)uncelle , (S)il veya (C)ikis :");
+		ch = tolower(getche());
+		printf("\n");
+	}
+	while(ch != 'e' && ch != 'a' && ch != 'g' &&  ch != 's' && ch !='c');
+	return ch;
+}
+
+char siginmacimenu()
+{
+char ch;
+	do
+	{
+		printf("Siginmaci (E)kle , Siginmaci (A)ra , Siginmaci (G)uncelle , Siginmaci (S)il ,\nSiginmaci (L)istele veya (C)ikis :");
+		ch = tolower(getche());
+		printf("\n");
+	}
+	while(ch != 'e' && ch != 'a' && ch != 'g' && ch != 'l' &&  ch != 's' && ch !='c');
+	return ch;
+}
+
+void siginmaciara()
+	{
+		FILE *ff;
+		char isim[20];
+		ff = fopen ("d:\\kisiler.txt","r");
+		if(ff == NULL)
+			printf("Sunucu Bulunamadi.\n");
+		else
+		{
+			printf("ismi giriniz :");
+			gets(isim);
+			while(!feof(ff))
+			{
+				fscanf(ff,"%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s",kayit.ad,kayit.soyad,kayit.dogum_tarihi,kayit.dogum_yeri,kayit.cinsiyet,kayit.uyruk,kayit.meslek,kayit.egitim_durumu,kayit.telefon,kayit.yerlestirildigi_adres,kayit.geldigi_sehir,kayit.gelis_tarihi,kayit.e_posta);
+				if(!strcmp(kayit.ad,isim))
+				{
+					printf("%s %s %s %s %s %s %s %s %s %s %s %s %s\n",kayit.ad,kayit.soyad,kayit.dogum_tarihi,kayit.dogum_yeri,kayit.cinsiyet,kayit.uyruk,kayit.meslek,kayit.egitim_durumu,kayit.telefon,kayit.yerlestirildigi_adres,kayit.geldigi_sehir,kayit.gelis_tarihi,kayit.e_posta);
+				}
+			}
+		}
+		fclose(ff);
+	}
+
+void kullaniciara()
+{
+	FILE *dd;
+	char isim[20];
+	dd = fopen ("d:\\kullanicilar.txt","r");
+	if(dd == NULL)
+		printf("Sunucu Bulunamadi.\n");
+	else
+	{
+		printf("ismi giriniz :");
+		gets(isim);
+		while(!feof(dd))
+		{
+			fscanf(dd,"%20s%20s%20s%20s%20s%20s%20s%20d\n",kayit2.TC_kimlik_no,kayit2.ad,kayit2.soyad,kayit2.adres,kayit2.telefon,kayit2.kullanici_adi,kayit2.sifre,&kayit2.yetki_turu);
+			if(!strcmp(kayit2.ad,isim))
+			{
+				printf("%s %s %s %s %s %s %s %d\n",kayit2.TC_kimlik_no,kayit2.ad,kayit2.soyad,kayit2.adres,kayit2.telefon,kayit2.kullanici_adi,kayit2.sifre,kayit2.yetki_turu);
+			}
+		}
+	}
+	fclose(dd);
+}
+
+void kullaniciguncelle()
+{
+	FILE *dd;
+	char guncelkul[20];
+	int a=0,tercih;
+	dd = fopen ("d:\\kullanicilar.txt","r+");
+	printf("Guncellemek istediginiz kullanici adini giriniz.");
+	gets(guncelkul);
+	if(dd == NULL)
+		printf("Sunucu Bulunamadi.\n");
+	else
+	{
+		while(!feof(dd))
+		{
+			fscanf(dd,"%20s%20s%20s%20s%20s%20s%20s%20d",kayit2.TC_kimlik_no,kayit2.ad,kayit2.soyad,kayit2.adres,kayit2.telefon,kayit2.kullanici_adi,kayit2.sifre,&kayit2.yetki_turu);
+			a++ ;
+			if(!strcmp(kayit2.ad,guncelkul))
+				break;
+		}
+
+		printf("TC Kimligi degistirmek icin 1'i\n");
+		printf("Adini degistirmek icin 2'yi\n");
+		printf("Soyadini degistirmek icin 3'u\n");
+		printf("Adresi degistirmek icin 4'u\n");
+		printf("Telefonu degistirmek icin 5'i\n");
+		printf("E-postayi degistirmek icin 6'yi\n");
+		printf("Kullanici adini guncellemek icin 7'yi\n");
+		printf("Sifreyi guncellemek icin 8'i\n");
+		printf("yetki turunu degistirmek icin 9'u\n");
+		printf("Tercihiniz :\n");
+		scanf("%d",&tercih);
+
+		switch(tercih)
+		{
+		case 1:
+			fseek(dd,((a-1)*160)+(a-1)*2,SEEK_SET);
+			printf("Yeni Kullanici TC'sini giriniz.");
+			scanf("%s",kayit2.TC_kimlik_no);
+			fprintf(dd,"%20s",kayit2.TC_kimlik_no);
+			break;
+		case 2 :
+			fseek(dd,((a-1)*160)+20+(a-1)*2,SEEK_SET);
+			printf("Yeni Kullanicinin adini giriniz.");
+			scanf("%s",kayit2.ad);
+			fprintf(dd,"%20s",kayit2.ad);
+			break;
+		case 3 :
+			fseek(dd,((a-1)*160)+40+(a-1)*2,SEEK_SET);
+			printf("Yeni Kullanici soyadini giriniz.");
+			scanf("%s",kayit2.soyad);
+			fprintf(dd,"%20s",kayit2.soyad);
+			break;
+		case 4 :
+			fseek(dd,((a-1)*160)+60+(a-1)*2,SEEK_SET);
+			printf("Yeni Kullanici adresini giriniz.");
+			scanf("%s",kayit2.adres);
+			fprintf(dd,"%20s",kayit2.adres);
+			break;
+		case 5 :
+			fseek(dd,((a-1)*160)+80+(a-1)*2,SEEK_SET);
+			printf("Yeni Kullanici telefonunu giriniz.");
+			scanf("%s",kayit2.telefon);
+			fprintf(dd,"%20s",kayit2.telefon);
+			break;
+		case 6 :
+			fseek(dd,((a-1)*160)+80+(a-1)*2,SEEK_SET);//E-posta eksik :D
+			printf("Yeni Kullanici E-posta'sini giriniz.");
+			scanf("%s",kayit2.e_posta);
+			fprintf(dd,"%20s",kayit2.e_posta);
+			break;
+		case 7 :
+			fseek(dd,((a-1)*160)+100+(a-1)*2,SEEK_SET);
+			printf("Yeni Kullanici adini giriniz.");
+			scanf("%s",kayit2.kullanici_adi);
+			fprintf(dd,"%20s",kayit2.kullanici_adi);
+			break;
+		case 8 :
+			fseek(dd,((a-1)*160)+120+(a-1)*2,SEEK_SET);
+			printf("Yeni Kullanici sifresini giriniz.");
+			scanf("%s",kayit2.sifre);
+			fprintf(dd,"%20s",kayit2.sifre);
+			break;
+		case 9 :
+			fseek(dd,((a-1)*160)+140+(a-1)*2,SEEK_SET);
+			printf("Yeni Kullanici yetki turunu giriniz.");
+			scanf("%s",kayit2.yetki_turu);
+			fprintf(dd,"%20s",kayit2.yetki_turu);
+			break;
+		}
+	}
+
+}
+
+void siginmaciguncelle()
+{
+	FILE *ff;
+	char guncelkul[20];
+	int a=0,tercih;
+	ff = fopen ("d:\\kisiler.txt","r+");
+	printf("Guncellemek istediginiz kullanici adini giriniz.");
+	gets(guncelkul);
+	if(ff == NULL)
+		printf("Sunucu Bulunamadi.\n");
+	else
+	{
+		while(!feof(ff))
+		{
+			fscanf(ff,"%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s",kayit.ad,kayit.soyad,kayit.dogum_tarihi,kayit.dogum_yeri,kayit.cinsiyet,kayit.uyruk,kayit.meslek,kayit.egitim_durumu,kayit.telefon,kayit.yerlestirildigi_adres,kayit.geldigi_sehir,kayit.gelis_tarihi,kayit.e_posta);
+			a++ ;
+			if(!strcmp(kayit.ad,guncelkul))
+				break;
+		}
+
+		printf("Siginmacinin adini degistirmek icin 1'i\n");
+		printf("Siginmacinin soyadini degistirmek icin 2'yi\n");
+		printf("Siginmacinin dogum tarihini degistirmek icin 3'u\n");
+		printf("Siginmacinin dogum yerini degistirmek icin 4'u\n");
+		printf("Siginmacinin cinsiyetini degistirmek icin 5'i\n");
+		printf("Siginmacinin uyrugunu degistirmek icin 6'yi\n");
+		printf("Siginmacinin meslegini degistirmek icin 7'yi\n");
+		printf("Siginmacinin egitim durumunu degistirmek icin 8'i\n");
+		printf("Siginmacinin telefonunu degistirmek icin 9'u\n");
+		printf("Siginmacinin yerlestirildigi adresi degistirmek icin 10'u\n");
+		printf("Siginmacinin geldigi sehiri degistirmek icin 11'i\n");
+		printf("Siginmacinin gelis tarihini degistirmek icin 12'yi\n");
+		printf("Siginmacinin E-Postasini degistirmek icin 12'yi\n");
+		printf("Tercihiniz :\n");
+		scanf("%d",&tercih);
+
+		switch(tercih)
+		{
+		case 1:
+			fseek(ff,((a-1)*260)+(a-1)*2,SEEK_SET);
+			printf("Siginmaci'nin yeni Adi'ni giriniz.");
+			scanf("%s",kayit.ad);
+			fprintf(ff,"%20s",kayit.ad);
+			break;
+		case 2:
+			fseek(ff,((a-1)*260)+(a-1)*2+20,SEEK_SET);
+			printf("Siginmaci'nin yeni Soyadi'ni giriniz.");
+			scanf("%s",kayit.soyad);
+			fprintf(ff,"%20s",kayit.soyad);
+			break;
+		case 3:
+			fseek(ff,((a-1)*260)+(a-1)*2+40,SEEK_SET);
+			printf("Siginmaci'nin yeni Dogum tarihi'ni giriniz.");
+			scanf("%s",kayit.dogum_tarihi);
+			fprintf(ff,"%20s",kayit.dogum_tarihi);
+			break;
+		case 4:
+			fseek(ff,((a-1)*260)+(a-1)*2+60,SEEK_SET);
+			printf("Siginmaci'nin yeni Dogum yeri'ni giriniz.");
+			scanf("%s",kayit.dogum_yeri);
+			fprintf(ff,"%20s",kayit.dogum_yeri);
+			break;
+
+		case 5:
+			fseek(ff,((a-1)*260)+(a-1)*2+80,SEEK_SET);
+			printf("Siginmaci'nin yeni Cinsiyet'ni giriniz.");
+			scanf("%s",kayit.cinsiyet);
+			fprintf(ff,"%20s",kayit.cinsiyet);
+			break;
+
+		case 6:
+			fseek(ff,((a-1)*260)+(a-1)*2+100,SEEK_SET);
+			printf("Siginmaci'nin yeni Uyrugu'nu giriniz.");
+			scanf("%s",kayit.uyruk);
+			fprintf(ff,"%20s",kayit.uyruk);
+			break;
+
+		case 7:
+			fseek(ff,((a-1)*260)+(a-1)*2+120,SEEK_SET);
+			printf("Siginmaci'nin yeni Meslegi'ni giriniz.");
+			scanf("%s",kayit.meslek);
+			fprintf(ff,"%20s",kayit.meslek);
+			break;
+
+		case 8:
+			fseek(ff,((a-1)*260)+(a-1)*2+140,SEEK_SET);
+			printf("Siginmaci'nin yeni Egitim durumu'nu giriniz.");
+			scanf("%s",kayit.egitim_durumu);
+			fprintf(ff,"%20s",kayit.egitim_durumu);
+			break;
+
+		case 9:
+			fseek(ff,((a-1)*260)+(a-1)*2+160,SEEK_SET);
+			printf("Siginmaci'nin yeni Telefonu'nu giriniz.");
+			scanf("%s",kayit.telefon);
+			fprintf(ff,"%20s",kayit.telefon);
+			break;
+
+		case 10:
+			fseek(ff,((a-1)*260)+(a-1)*2+180,SEEK_SET);
+			printf("Siginmaci'nin yeni Yerlestirildigi adres'i giriniz.");
+			scanf("%s",kayit.yerlestirildigi_adres);
+			fprintf(ff,"%20s",kayit.yerlestirildigi_adres);
+			break;
+
+		case 11:
+			fseek(ff,((a-1)*260)+(a-1)*2+200,SEEK_SET);
+			printf("Siginmaci'nin yeni Geldigi sehir'i giriniz.");
+			scanf("%s",kayit.geldigi_sehir);
+			fprintf(ff,"%20s",kayit.geldigi_sehir);
+			break;
+		case 12:
+			fseek(ff,((a-1)*260)+(a-1)*2+220,SEEK_SET);
+			printf("Siginmaci'nin yeni Gelis tarihi'ni giriniz.");
+			scanf("%s",kayit.gelis_tarihi);
+			fprintf(ff,"%20s",kayit.gelis_tarihi);
+			break;
+		case 13:
+			fseek(ff,((a-1)*260)+(a-1)*2+240,SEEK_SET);
+			printf("Siginmaci'nin yeni E-Posta adresini giriniz.");
+			scanf("%s",kayit.e_posta);
+			fprintf(ff,"%20s",kayit.e_posta);
+			break;
+		}
+	}
+	fclose(ff);
+}
+
+void siginmacisil()
+{
+	FILE *ff;
+	char silkul[20];
+	int a=0,i=0,kacinci;
+	ff = fopen ("d:\\kisiler.txt","r");
+	printf("Silmek istediginiz istediginiz kullanici adini giriniz.");
+	scanf("%s",silkul);
+	if(ff == NULL)
+		printf("Sunucu Bulunamadi.\n");
+	else
+	{
+		while(!feof(ff))
+		{
+			fscanf(ff,"%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s",yedek2[a].ad,yedek2[a].soyad,yedek2[a].dogum_tarihi,yedek2[a].dogum_yeri,yedek2[a].cinsiyet,yedek2[a].uyruk,yedek2[a].meslek,yedek2[a].egitim_durumu,yedek2[a].telefon,yedek2[a].yerlestirildigi_adres,yedek2[a].geldigi_sehir,yedek2[a].gelis_tarihi,yedek2[a].e_posta);
+			a++;
+		}
+		for(i=0;i<(a-1);i++)
+		{
+			if(!strcmp(silkul,yedek2[i].ad))
+			{          
+				kacinci=i;
+			}
+		}
+
+		for(i=0;i<(kacinci);i++)
+		{
+			strcpy(silinecek2[i].ad,yedek2[i].ad);
+			strcpy(silinecek2[i].soyad,yedek2[i].soyad);
+			strcpy(silinecek2[i].dogum_tarihi,yedek2[i].dogum_tarihi);
+			strcpy(silinecek2[i].dogum_yeri,yedek2[i].dogum_yeri);
+			strcpy(silinecek2[i].cinsiyet,yedek2[i].cinsiyet);
+			strcpy(silinecek2[i].uyruk,yedek2[i].uyruk);
+			strcpy(silinecek2[i].meslek,yedek2[i].meslek);
+			strcpy(silinecek2[i].egitim_durumu,yedek2[i].egitim_durumu);
+			strcpy(silinecek2[i].telefon,yedek2[i].telefon);
+			strcpy(silinecek2[i].yerlestirildigi_adres,yedek2[i].yerlestirildigi_adres);
+			strcpy(silinecek2[i].geldigi_sehir,yedek2[i].geldigi_sehir);
+			strcpy(silinecek2[i].gelis_tarihi,yedek2[i].gelis_tarihi);
+			strcpy(silinecek2[i].e_posta,yedek2[i].e_posta);
+		}
+		for(i=(kacinci+1);i<=(a-1);i++)
+		{
+			strcpy(silinecek2[i-1].ad,yedek2[i].ad);
+			strcpy(silinecek2[i-1].soyad,yedek2[i].soyad);
+			strcpy(silinecek2[i-1].dogum_tarihi,yedek2[i].dogum_tarihi);
+			strcpy(silinecek2[i-1].dogum_yeri,yedek2[i].dogum_yeri);
+			strcpy(silinecek2[i-1].cinsiyet,yedek2[i].cinsiyet);
+			strcpy(silinecek2[i-1].uyruk,yedek2[i].uyruk);
+			strcpy(silinecek2[i-1].meslek,yedek2[i].meslek);
+			strcpy(silinecek2[i-1].egitim_durumu,yedek2[i].egitim_durumu);
+			strcpy(silinecek2[i-1].telefon,yedek2[i].telefon);
+			strcpy(silinecek2[i-1].yerlestirildigi_adres,yedek2[i].yerlestirildigi_adres);
+			strcpy(silinecek2[i-1].geldigi_sehir,yedek2[i].geldigi_sehir);
+			strcpy(silinecek2[i-1].gelis_tarihi,yedek2[i].gelis_tarihi);
+			strcpy(silinecek2[i-1].e_posta,yedek2[i].e_posta);
+		}
+		fclose(ff);
+	}
+	FILE *cc;
+	cc = fopen ("d:\\kisiler.txt","w");
+	if(cc == NULL)
+		printf("Sunucu Bulunamadi.\n");
+	else
+	{
+		int i2,c=0;
+		for(i2=0;i2<(a-2);i2++)
+		{
+			fprintf(cc,"%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s\n",silinecek2[c].ad,silinecek2[c].soyad,silinecek2[c].dogum_tarihi,silinecek2[c].dogum_yeri,silinecek2[c].cinsiyet,silinecek2[c].uyruk,silinecek2[c].meslek,silinecek2[c].egitim_durumu,silinecek2[c].telefon,silinecek2[c].yerlestirildigi_adres,silinecek2[c].geldigi_sehir,silinecek2[c].gelis_tarihi,silinecek2[c].e_posta);
+			c++;
+		}
+		fclose(cc);
+	}
+}
+
+void kullanicisil()
+{
+	FILE *dd;
+	char silkul[20];
+	int a=0,i=0,kacinci;
+	dd = fopen ("d:\\kullanicilar.txt","r");
+	printf("Silmek istediginiz istediginiz kullanici adini giriniz.");
+	gets(silkul);
+	if(dd == NULL)
+		printf("Sunucu Bulunamadi.\n");
+	else
+	{
+		while(!feof(dd))
+		{
+			fscanf(dd,"%20s%20s%20s%20s%20s%20s%20s%20d",yedek[a].TC_kimlik_no,yedek[a].ad,yedek[a].soyad,yedek[a].adres,yedek[a].telefon,yedek[a].kullanici_adi,yedek[a].sifre,&yedek[a].yetki_turu);
+			a++;
+		}
+		for(i=0;i<(a-1);i++)
+		{
+			if(!strcmp(silkul,yedek[i].ad))
+			{          
+				kacinci=i;
+			}
+		}
+
+		for(i=0;i<(kacinci);i++)
+		{
+			strcpy(silinecek[i].TC_kimlik_no,yedek[i].TC_kimlik_no);
+			strcpy(silinecek[i].ad,yedek[i].ad);
+			strcpy(silinecek[i].soyad,yedek[i].soyad);
+			strcpy(silinecek[i].adres,yedek[i].adres);
+			strcpy(silinecek[i].e_posta,yedek[i].e_posta);
+			strcpy(silinecek[i].kullanici_adi,yedek[i].kullanici_adi);
+			strcpy(silinecek[i].sifre,yedek[i].sifre);
+			strcpy(silinecek[i].telefon,yedek[i].telefon);
+			silinecek[i].yetki_turu=yedek[i].yetki_turu;
+		}
+		for(i=(kacinci+1);i<=(a-1);i++)
+		{
+			strcpy(silinecek[i-1].TC_kimlik_no,yedek[i].TC_kimlik_no);
+			strcpy(silinecek[i-1].ad,yedek[i].ad);
+			strcpy(silinecek[i-1].soyad,yedek[i].soyad);
+			strcpy(silinecek[i-1].adres,yedek[i].adres);
+			strcpy(silinecek[i-1].e_posta,yedek[i].e_posta);
+			strcpy(silinecek[i-1].kullanici_adi,yedek[i].kullanici_adi);
+			strcpy(silinecek[i-1].sifre,yedek[i].sifre);
+			strcpy(silinecek[i-1].telefon,yedek[i].telefon);
+			silinecek[i-1].yetki_turu=yedek[i].yetki_turu;
+		}
+		fclose(dd);
+	}
+	FILE *cc;
+	cc = fopen ("d:\\kullanicilar.txt","w");
+	if(cc == NULL)
+		printf("Sunucu Bulunamadi.\n");
+	else
+	{
+		int i2,c=0;
+		for(i2=0;i2<(a-2);i2++)
+		{
+			fprintf(cc,"%20s%20s%20s%20s%20s%20s%20s%20d\n",silinecek[c].TC_kimlik_no,silinecek[c].ad,silinecek[c].soyad,silinecek[c].adres,silinecek[c].telefon,silinecek[c].kullanici_adi,silinecek[c].sifre,silinecek[c].yetki_turu);
+			c++;
+		}
+		fclose(cc);
+	}
+}
+
+void sifre_degistirme()
+{
+	FILE *dd;
+	char isim[20],yeni_sifre[20];
+	int a=0,tercih;
+	dd = fopen ("d:\\kullanicilar.txt","r+");
+	if(dd == NULL)
+		printf("Sunucu Bulunamadi.\n");
+	else
+	{
+		while(!feof(dd))
+		{
+			fscanf(dd,"%20s%20s%20s%20s%20s%20s%20s%20d",kayit2.TC_kimlik_no,kayit2.ad,kayit2.soyad,kayit2.adres,kayit2.telefon,kayit2.kullanici_adi,kayit2.sifre,&kayit2.yetki_turu);
+			a++ ;
+			if(!strcmp(kayit2.kullanici_adi,kulgoruntule))
+				break;
+		}
+
+		fseek(dd,((a-1)*160)+120+(a-1)*2,SEEK_SET);
+		printf("Yeni kullanici sifrenizi giriniz.");
+		scanf("%s",kayit2.sifre);
+		fprintf(dd,"%20s",kayit2.sifre);
+
+	}
+	fclose(dd);
+}
+
+void kullanici_goruntuleme()
+	{
+	FILE *dd;
+	dd = fopen ("d:\\kullanicilar.txt","r");
+	if(dd == NULL)
+		printf("Sunucu Bulunamadi.\n");
+	else
+	{
+		while(!feof(dd))
+		{
+			fscanf(dd,"%20s%20s%20s%20s%20s%20s%20s%20d\n",kayit2.TC_kimlik_no,kayit2.ad,kayit2.soyad,kayit2.adres,kayit2.telefon,kayit2.kullanici_adi,kayit2.sifre,&kayit2.yetki_turu);
+			if(!strcmp(kayit2.ad,kulgoruntule))
+			{
+				printf("%s %s %s %s %s %s %s %d\n",kayit2.TC_kimlik_no,kayit2.ad,kayit2.soyad,kayit2.adres,kayit2.telefon,kayit2.kullanici_adi,kayit2.sifre,kayit2.yetki_turu);
+			}
+		}
+	}
+	fclose(dd);
+}
+
+void siginmacilistele()
+{
+	FILE *ff;
+	char guncelkul[20];
+	int a=0,i=0;
+	ff = fopen ("d:\\kisiler.txt","r+");
+	if(ff == NULL)
+		printf("Sunucu Bulunamadi.\n");
+	else
+	{
+		while(!feof(ff))
+		{
+			fscanf(ff,"%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s",listeleme[a].ad,listeleme[a].soyad,listeleme[a].dogum_tarihi,listeleme[a].dogum_yeri,listeleme[a].cinsiyet,listeleme[a].uyruk,listeleme[a].meslek,listeleme[a].egitim_durumu,listeleme[a].telefon,listeleme[a].yerlestirildigi_adres,listeleme[a].geldigi_sehir,listeleme[a].gelis_tarihi,listeleme[a].e_posta);
+			a++ ;
+		}
+		for(i=0;i<a;i++)
+		{
+		printf("%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s%20s\n",listeleme[i].ad,listeleme[i].soyad,listeleme[i].dogum_tarihi,listeleme[i].dogum_yeri,listeleme[i].cinsiyet,listeleme[i].uyruk,listeleme[i].meslek,listeleme[i].egitim_durumu,listeleme[i].telefon,listeleme[a].yerlestirildigi_adres,listeleme[i].geldigi_sehir,listeleme[i].gelis_tarihi,listeleme[i].e_posta);
+		}
+	}
+	fclose(ff);
+}
